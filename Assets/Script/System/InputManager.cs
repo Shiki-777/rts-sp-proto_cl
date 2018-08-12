@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class InputManager : MonoBehaviour {
+
     // ナビメッシュエージェント関連（経路）
     private NavMeshAgent agent;
     private RaycastHit hit;
@@ -12,8 +13,22 @@ public class InputManager : MonoBehaviour {
     // アニメーター
     private Animator animator;
 
-	// Use this for initialization
-	void Start ()
+    // アクティブフラグ。アクティブ時のみ移動ができる
+    private bool isActive = false;
+    public bool IsActive
+    {
+        get
+        {
+            return isActive;
+        }
+        set
+        {
+            isActive = value;
+        }
+    }
+
+    // Use this for initialization
+    void Start ()
     {
         // オブジェクトのナビメッシュエージェントを取得
         agent = GetComponent<NavMeshAgent>();
@@ -25,13 +40,15 @@ public class InputManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        // 左クリックしたときに、
-        if (Input.GetMouseButtonDown(0))
+        if (isActive == false) return;
+
+        // 左クリックした時にキャラが待機中だったら移動させる
+        if (Input.GetMouseButtonDown(0) && animator.GetBool("Locomotion") == false)
         {
-            // マウスの位置からRayを発射して、
+            // マウスの位置からRayを発射する
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             
-            // 物体にあたったら、
+            // Rayがオブジェクトに当たったらその座標まで移動する
             if (Physics.Raycast(ray, out hit, 100f))
             {
                 // その場所に、Nav Mesh Agentをアタッチしたオブジェクトを移動させる
@@ -42,11 +59,12 @@ public class InputManager : MonoBehaviour {
             }
         }
 
-        // 目的地とプレイヤーとの距離が1以下になったら、
-        if (Vector3.Distance(hit.point, transform.position) < 1.0f)
+        // 目的地とプレイヤーとの距離が1以下、かつ、移動中だったら停止する
+        if (Vector3.Distance(hit.point, transform.position) < 1.0f && animator.GetBool("Locomotion"))
         {
             // "Lcomotion"アニメーションから抜け出す（アイドルに戻る）
             animator.SetBool("Locomotion", false);
+            isActive = false;
         }
     }
 
