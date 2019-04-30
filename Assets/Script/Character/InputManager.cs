@@ -40,10 +40,11 @@ public class InputManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        // キャラがアクティブじゃなければ中止
         if (isActive == false) return;
 
-        // 左クリックした時にキャラが待機中だったら移動させる
-        if (Input.GetMouseButtonDown(0) && animator.GetBool("Locomotion") == false)
+        // 右クリックした時にキャラが待機中だったら移動させる
+        if (Input.GetMouseButtonDown(1) && animator.GetBool("Locomotion") == false)
         {
             // マウスの位置からRayを発射する
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -65,6 +66,10 @@ public class InputManager : MonoBehaviour {
             // "Lcomotion"アニメーションから抜け出す（アイドルに戻る）
             animator.SetBool("Locomotion", false);
             isActive = false;
+
+            // アクティブマークを非表示にする
+            GameObject activeMark = GameObject.Find("ActiveMark");
+            activeMark.SetActive(false);
         }
     }
 

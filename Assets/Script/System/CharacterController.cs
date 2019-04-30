@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterController : MonoBehaviour {
 
+    public GameObject activeMark = GameObject.Find("ActiveMark");
+
     private RaycastHit hit;
     private Ray ray;
 
@@ -34,6 +36,11 @@ public class CharacterController : MonoBehaviour {
                 if(unit.tag == "Player")
                 {
                     unit.GetComponent<InputManager>().IsActive = true;
+
+                    // アクティブマークを表示
+                    activeMark.SetActive(true);
+                    Vector3 position = unit.GetComponent<InputManager>().transform.position;
+                    activeMark.transform.position = new Vector3(position.x, activeMark.transform.position.y, position.z);
                 }
             }
         }
